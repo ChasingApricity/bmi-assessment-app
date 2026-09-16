@@ -169,13 +169,16 @@
             <div class="mt-4 md:mt-0 flex items-center justify-center space-x-2"><span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded font-bold">SRWC Diet Studio</span></div>
         </div>
         
-        <!-- BUTTONS (These hide automatically when downloading the PDF) -->
+        <!-- BUTTONS (Dynamic based on device) -->
         <div id="action-buttons" class="mt-8 flex justify-center space-x-4">
-            <button onclick="downloadPDF()" class="bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-emerald-700 transition shadow-md flex items-center">
+            <!-- Hidden by default, appears only on the Student's Phone -->
+            <button id="btn-download" onclick="downloadPDF()" class="hidden bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-emerald-700 transition shadow-md items-center">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Download PDF
             </button>
-            <button onclick="window.location.reload()" class="bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-lg hover:bg-slate-300 transition">
+            
+            <!-- Visible by default on the Assessor's Laptop -->
+            <button id="btn-next" onclick="window.location.reload()" class="bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-lg hover:bg-slate-300 transition">
                 Next Student
             </button>
         </div>
