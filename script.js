@@ -285,16 +285,28 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
             as: assessorName, su: supervisorName
         });
         
-        document.getElementById('qrcode').innerHTML = "";
-        
+        const reportUrl = `${baseUrl}?${urlParams.toString()}`;
+
+        // Reset QR box container visibility
+        const qrBox = document.getElementById('qr-box');
+        if (qrBox) qrBox.style.display = '';
+
         if (typeof QRCode === 'undefined') {
             alert("QRCode generator library did not load properly.");
             return;
         }
 
-        new QRCode(document.getElementById("qrcode"), {
-            text: `${baseUrl}?${urlParams.toString()}`,
-            width: 130, height: 130, colorDark : "#047857", colorLight : "#ffffff"
+        // --- UPDATED QR CODE GENERATION ---
+        const qrElement = document.getElementById("qrcode");
+        qrElement.innerHTML = "";
+
+        new QRCode(qrElement, {
+            text: reportUrl,
+            width: 140,
+            height: 140,
+            colorDark: "#000000",   // Pure black
+            colorLight: "#ffffff",  // Pure white background
+            correctLevel: QRCode.CorrectLevel.H // Highest error correction
         });
 
         document.getElementById('screen-form').classList.add('hidden');
