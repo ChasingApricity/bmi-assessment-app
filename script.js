@@ -273,8 +273,10 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         else if (zScore <= 1) interpretation = "Normal (Healthy Weight)";
         else if (zScore <= 2) interpretation = "Overweight";
         else interpretation = "Obesity";
-
-        let displayAge = `${Math.floor(ageMonths / 12)} yrs, ${ageMonths % 12} mos`;
+// Clean Age Output (e.g. "15 Yrs, 6 Mos")
+        let years = Math.floor(ageMonths / 12);
+        let months = ageMonths % 12;
+        let displayAge = `${years} Yrs, ${months} Mos`;
 
         populateReportCard(name, gender, displayAge, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation, assessorName, supervisorName);
 
