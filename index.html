@@ -9,58 +9,72 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         
-        /* This forces the calendar icon to be large, visible, and easy to click */
+        /* Forces the calendar icon to be large and easy to click */
         input[type="date"]::-webkit-calendar-picker-indicator {
             opacity: 1;
             display: block;
             cursor: pointer;
             width: 24px;
             height: 24px;
-            color: #4f46e5; /* Indigo color to match the theme */
+            color: #10b981; /* Emerald color to match the new header theme */
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4 md:p-8 text-slate-800">
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 md:p-8 text-slate-800">
 
     <!-- Main Card Container -->
-    <div class="w-full max-w-2xl bg-white rounded-[2rem] shadow-xl overflow-hidden border border-slate-100">
+    <div class="w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-slate-100">
         
-        <!-- Minimalist Modern Header -->
-        <div class="pt-10 pb-6 px-8 text-center">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-                BMI & Health Assessment Camp
-            </h1>
-            <p class="text-slate-500 mt-3 text-sm md:text-base font-medium">
-                Nutrition & Wellness Screening for School Children
-            </p>
+        <!-- ATTRACTIVE MODERN HEADER -->
+        <div class="relative bg-gradient-to-br from-teal-500 via-emerald-500 to-green-600 pt-12 pb-10 px-8 text-center">
+            
+            <!-- Decorative glowing background orbs -->
+            <div class="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
+                <div class="absolute -top-12 -left-12 w-48 h-48 bg-white rounded-full mix-blend-overlay blur-2xl"></div>
+                <div class="absolute -bottom-16 -right-10 w-64 h-64 bg-teal-200 rounded-full mix-blend-overlay blur-3xl"></div>
+            </div>
+            
+            <!-- Header Content -->
+            <div class="relative z-10">
+                <!-- Frosted Glass College Badge -->
+                <span class="inline-block bg-white/20 text-white backdrop-blur-md px-5 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-5 shadow-sm border border-white/30">
+                    SRWC Diet Studio
+                </span>
+                
+                <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight drop-shadow-md">
+                    BMI & Health Assessment Camp
+                </h1>
+                <p class="text-emerald-50 mt-3 text-sm md:text-base font-medium max-w-md mx-auto">
+                    Nutrition & Wellness Screening for School Children
+                </p>
+            </div>
         </div>
 
-        <form class="px-8 pb-10 space-y-8">
+        <!-- Form Body -->
+        <form class="px-8 pt-8 pb-10 space-y-8">
             
             <!-- Student Name -->
             <div class="space-y-2">
                 <label for="studentName" class="block text-sm font-semibold text-slate-700">Student Name</label>
                 <input type="text" id="studentName" required placeholder="Enter full name" 
-                    class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                    class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
             </div>
 
-            <!-- Modern Gender Radio Buttons (Card Style) -->
+            <!-- Modern Gender Radio Buttons -->
             <div class="space-y-2">
                 <label class="block text-sm font-semibold text-slate-700">Gender</label>
                 <div class="grid grid-cols-2 gap-4">
-                    <!-- Male Radio Card -->
                     <label class="cursor-pointer relative">
                         <input type="radio" name="gender" value="male" class="peer sr-only" required>
-                        <div class="rounded-2xl border-2 border-slate-100 bg-slate-50 p-4 text-center hover:bg-slate-100 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all">
+                        <div class="rounded-2xl border-2 border-slate-100 bg-slate-50 p-4 text-center hover:bg-slate-100 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 transition-all">
                             <span class="block text-2xl mb-1">👦🏽</span>
                             <span class="font-bold text-sm">Male</span>
                         </div>
                     </label>
                     
-                    <!-- Female Radio Card -->
                     <label class="cursor-pointer relative">
                         <input type="radio" name="gender" value="female" class="peer sr-only" required>
-                        <div class="rounded-2xl border-2 border-slate-100 bg-slate-50 p-4 text-center hover:bg-slate-100 peer-checked:border-pink-500 peer-checked:bg-pink-50 peer-checked:text-pink-700 transition-all">
+                        <div class="rounded-2xl border-2 border-slate-100 bg-slate-50 p-4 text-center hover:bg-slate-100 peer-checked:border-teal-500 peer-checked:bg-teal-50 peer-checked:text-teal-700 transition-all">
                             <span class="block text-2xl mb-1">👧🏽</span>
                             <span class="font-bold text-sm">Female</span>
                         </div>
@@ -73,7 +87,7 @@
                 <label for="dob" class="block text-sm font-semibold text-slate-700">Date of Birth</label>
                 <div class="relative">
                     <input type="date" id="dob" required 
-                        class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all appearance-none">
+                        class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all appearance-none">
                 </div>
                 <p class="text-xs text-slate-400 pl-1">Type the date (DD/MM/YYYY) or click the icon to open the calendar.</p>
             </div>
@@ -83,20 +97,20 @@
                 <div class="space-y-2">
                     <label for="height" class="block text-sm font-semibold text-slate-700">Height (cm)</label>
                     <input type="number" step="0.1" id="height" required placeholder="e.g. 160" 
-                        class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                        class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
                 </div>
 
                 <div class="space-y-2">
                     <label for="weight" class="block text-sm font-semibold text-slate-700">Weight (kg)</label>
                     <input type="number" step="0.1" id="weight" required placeholder="e.g. 50" 
-                        class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
+                        class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
                 </div>
             </div>
 
             <!-- Submit Button -->
             <div class="pt-4">
                 <button type="submit" 
-                    class="w-full bg-slate-900 text-white font-bold text-lg py-4 px-6 rounded-xl hover:bg-indigo-600 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-200 transition-all duration-300">
+                    class="w-full bg-slate-900 text-white font-bold text-lg py-4 px-6 rounded-xl hover:bg-emerald-600 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-emerald-200 transition-all duration-300 transform hover:-translate-y-0.5">
                     Calculate Result
                 </button>
             </div>
