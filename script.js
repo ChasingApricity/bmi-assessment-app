@@ -167,9 +167,9 @@ document.querySelector('form').addEventListener('submit', function(event) {
         ageMonths--; 
     }
 
-    // 4. Validate Age (Must be between 14 and 19 years / 168-228 months)
-    if (ageMonths < 168 || ageMonths > 228) {
-        alert("This portal is currently configured only for ages 14 to 19 (168-228 months). Student is " + ageMonths + " months old.");
+    // 4. Validate Age (Must be between 14 and 19 years / 160-228 months)
+    if (ageMonths < 160 || ageMonths > 228) {
+        alert("This portal is currently configured only for ages 13 to 19 (160-228 months). Student is " + ageMonths + " months old.");
         return; 
     }
 
