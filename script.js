@@ -148,9 +148,9 @@ function zScoreToPercentile(z) {
     let b1 = 0.319381530, b2 = -0.356563782, b3 = 1.781477937, b4 = -1.821255978, b5 = 1.330274429;
     let p = 0.2316419, c = 0.39894228;
     let sign = (z > 0) ? 1 : -1;
-    z = Math.abs(z);
-    let t = 1.0 / (1.0 + p * z);
-    let cdf = 1.0 - c * Math.exp(-z * z / 2.0) * t * (t * (t * (t * (t * b5 + b4) + b3) + b2) + b1);
+    let absZ = Math.abs(z);
+    let t = 1.0 / (1.0 + p * absZ);
+    let cdf = 1.0 - c * Math.exp(-absZ * absZ / 2.0) * t * (t * (t * (t * (t * b5 + b4) + b3) + b2) + b1);
     let percentile = (sign === 1) ? cdf : (1.0 - cdf);
     return Math.round(percentile * 100);
 }
@@ -159,9 +159,9 @@ function getOrdinalSuffix(val) {
     let i = Number(val);
     if (isNaN(i)) return val + "th";
     let j = i % 10, k = i % 100;
-    if (j == 1 && k != 11) return i + "st";
-    if (j == 2 && k != 12) return i + "nd";
-    if (j == 3 && k != 13) return i + "rd";
+    if (j === 1 && k !== 11) return i + "st";
+    if (j === 2 && k !== 12) return i + "nd";
+    if (j === 3 && k !== 13) return i + "rd";
     return i + "th";
 }
 
@@ -178,28 +178,29 @@ function populateReportCard(name, gender, displayAge, height, weight, bmi, zscor
     
     document.getElementById('rep-assessor').innerText = assessor ? assessor : "Not provided";
     document.getElementById('rep-supervisor').innerText = supervisor ? supervisor : "Not provided";
+}
 
-// PDF DOWNLOAD FUNCTION (Scaled down to fit 100% of the report on a single page)
+// --- PDF DOWNLOAD FUNCTION ---
 const PDF_RENDER_WIDTH = 1100;
 
 async function downloadPDF() {
-if (typeof html2canvas === 'undefined' || !((window.jspdf && window.jspdf.jsPDF) || window.jsPDF)) {
-    alert('PDF libraries did not load. Check your internet connection and reload the page.');
-    return;
-}
+    if (typeof html2canvas === 'undefined' || !((window.jspdf && window.jspdf.jsPDF) || window.jsPDF)) {
+        alert('PDF libraries did not load. Check your internet connection and reload the page.');
+        return;
+    }
     const btnDiv  = document.getElementById('action-buttons');
     const element = document.getElementById('screen-report');
     const meta    = document.querySelector('meta[name="viewport"]');
-    const oldMeta = meta.getAttribute('content');
+    const oldMeta = meta ? meta.getAttribute('content') : '';
     const oldShadow = element.style.boxShadow;
 
-    btnDiv.style.display = 'none';
+    if (btnDiv) btnDiv.style.display = 'none';
     element.style.boxShadow = 'none';
 
     // Force desktop layout so md: classes apply and the card stays wide
-    meta.setAttribute('content', 'width=' + PDF_RENDER_WIDTH);
+    if (meta) meta.setAttribute('content', 'width=' + PDF_RENDER_WIDTH);
     window.scrollTo(0, 0);
-    await new Promise(r => setTimeout(r, 600)); // let it reflow
+    await new Promise(r => setTimeout(r, 600)); // let layout reflow
 
     try {
         const canvas = await html2canvas(element, {
@@ -219,20 +220,18 @@ if (typeof html2canvas === 'undefined' || !((window.jspdf && window.jspdf.jsPDF)
         const margin = 6;
 
         // Scale so the ENTIRE card fits on one page
-        const ratio = Math.min((pageW - margin * 2) / canvas.width,
-                               (pageH - margin * 2) / canvas.height);
+        const ratio = Math.min((pageW - margin * 2) / canvas.width, (pageH - margin * 2) / canvas.height);
         const w = canvas.width * ratio;
         const h = canvas.height * ratio;
 
-        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG',
-                     (pageW - w) / 2, (pageH - h) / 2, w, h);
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', (pageW - w) / 2, (pageH - h) / 2, w, h);
         pdf.save('SRWC_BMI_Report_Card.pdf');
     } catch (e) {
         alert('PDF error: ' + e.message);
     } finally {
-        meta.setAttribute('content', oldMeta);
+        if (meta && oldMeta) meta.setAttribute('content', oldMeta);
         element.style.boxShadow = oldShadow;
-        btnDiv.style.display = 'flex';
+        if (btnDiv) btnDiv.style.display = 'flex';
     }
 }
 
@@ -253,13 +252,14 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         const heightM = heightCm / 100;
         const bmi = weightKg / (heightM * heightM);
 
-        const dob = new Date(dobInput);
+        // Appending T00:00:00 prevents midnight UTC timezone shifts
+        const dob = new Date(dobInput + 'T00:00:00');
         const today = new Date();
         let ageMonths = (today.getFullYear() - dob.getFullYear()) * 12 + (today.getMonth() - dob.getMonth());
         if (today.getDate() < dob.getDate()) ageMonths--; 
 
         if (ageMonths < 160 || ageMonths > 228) {
-            alert("This portal is configured for ages 160 to 228 months. Student is " + ageMonths + " months old.");
+            alert("This portal is configured for ages 160 to 228 months (approx. 13 to 19 yrs). Student is " + ageMonths + " months old.");
             return; 
         }
 
@@ -286,6 +286,12 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         });
         
         document.getElementById('qrcode').innerHTML = "";
+        
+        if (typeof QRCode === 'undefined') {
+            alert("QRCode generator library did not load properly.");
+            return;
+        }
+
         new QRCode(document.getElementById("qrcode"), {
             text: `${baseUrl}?${urlParams.toString()}`,
             width: 130, height: 130, colorDark : "#047857", colorLight : "#ffffff"
@@ -310,7 +316,8 @@ window.addEventListener('DOMContentLoaded', () => {
             params.get('as'), params.get('su')
         );
         
-        document.getElementById('qr-box').style.display = 'none';
+        const qrBox = document.getElementById('qr-box');
+        if (qrBox) qrBox.style.display = 'none';
         
         const btnNext = document.getElementById('btn-next');
         const btnDownload = document.getElementById('btn-download');
