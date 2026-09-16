@@ -155,7 +155,10 @@ function zScoreToPercentile(z) {
     return Math.round(percentile * 100);
 }
 
-function getOrdinalSuffix(i) {
+// Strict grammar handler ensuring 83rd, 36th, 11th, etc.
+function getOrdinalSuffix(val) {
+    let i = Number(val);
+    if (isNaN(i)) return val + "th";
     let j = i % 10, k = i % 100;
     if (j == 1 && k != 11) return i + "st";
     if (j == 2 && k != 12) return i + "nd";
@@ -175,12 +178,11 @@ function populateReportCard(name, gender, displayAge, height, weight, bmi, zscor
     document.getElementById('rep-percentile').innerText = getOrdinalSuffix(percentile);
     document.getElementById('rep-interp').innerText = interp || "";
     
-    // Explicitly inject the Assessor and Supervisor names into the footer
     document.getElementById('rep-assessor').innerText = assessor ? assessor : "Not provided";
     document.getElementById('rep-supervisor').innerText = supervisor ? supervisor : "Not provided";
 }
 
-// PDF DOWNLOAD FUNCTION
+// PDF DOWNLOAD FUNCTION (Fully repaired)
 function downloadPDF() {
     const btnDiv = document.getElementById('action-buttons');
     btnDiv.style.display = 'none';
@@ -194,6 +196,11 @@ function downloadPDF() {
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
+    html2pdf().set(opt).from(element).save().then(() => {
+        btnDiv.style.display = 'flex';
+    });
+}
+
 // --- FORM SUBMISSION LOGIC ---
 document.getElementById('assessmentForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -205,7 +212,6 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         const heightCm = parseFloat(document.getElementById('height').value);
         const weightKg = parseFloat(document.getElementById('weight').value);
         
-        // Grab names directly from the input boxes
         const assessorName = document.getElementById('assessor').value;
         const supervisorName = document.getElementById('supervisor').value;
 
@@ -235,10 +241,8 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
 
         let displayAge = `${Math.floor(ageMonths / 12)} yrs, ${ageMonths % 12} mos`;
 
-        // Pass names into the report population function
         populateReportCard(name, gender, displayAge, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation, assessorName, supervisorName);
 
-        // Build URL parameters for QR code (including assessor 'as' and supervisor 'su')
         const baseUrl = window.location.origin + window.location.pathname;
         const urlParams = new URLSearchParams({
             n: name, g: gender, a: displayAge, h: heightCm, w: weightKg, 
@@ -264,7 +268,6 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     if(params.has('n')) {
-        // Extract names from the URL parameters when scanned
         populateReportCard(
             params.get('n'), params.get('g'), params.get('a'), 
             params.get('h'), params.get('w'), params.get('b'), 
