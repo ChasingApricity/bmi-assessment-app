@@ -179,18 +179,17 @@ function populateReportCard(name, gender, displayAge, height, weight, bmi, zscor
     document.getElementById('rep-assessor').innerText = assessor ? assessor : "Not provided";
     document.getElementById('rep-supervisor').innerText = supervisor ? supervisor : "Not provided";
 }
-
-// PDF DOWNLOAD FUNCTION (Fully intact and fixed)
+// PDF DOWNLOAD FUNCTION (Scaled down to fit 100% of the report on a single page)
 function downloadPDF() {
     const btnDiv = document.getElementById('action-buttons');
     btnDiv.style.display = 'none';
     
     const element = document.getElementById('screen-report');
     const opt = {
-      margin:       [0.05, 0.05, 0.05, 0.05],
+      margin:       [0.1, 0.1, 0.1, 0.1],
       filename:     'SRWC_BMI_Report_Card.pdf',
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      html2canvas:  { scale: 1.5, useCORS: true, logging: false, windowWidth: 800 },
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
@@ -198,7 +197,6 @@ function downloadPDF() {
         btnDiv.style.display = 'flex';
     });
 }
-
 // --- FORM SUBMISSION LOGIC ---
 document.getElementById('assessmentForm').addEventListener('submit', function(event) {
     event.preventDefault();
