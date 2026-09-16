@@ -199,12 +199,21 @@
             <div class="bg-[#E6F9F3] p-3 rounded-lg text-center border border-[#CDF0E5]"><span class="text-2xl block mb-1">📱</span><h4 class="font-bold text-[#4D9981] text-xs leading-tight">Balance<br>Screen Time</h4></div>
         </div>
 
-       <!-- Parent Message (Fixed for PDF rendering bug) -->
-        <div class="bg-slate-50 border border-slate-200 rounded-lg py-4 pr-4 pl-16 mt-6 relative" style="text-align: left;">
-            <span class="absolute left-4 top-4 text-3xl" style="line-height: 1;">📢</span>
-            <div style="word-spacing: 0px !important; letter-spacing: 0px !important; text-align: left !important;">
-                <h4 class="font-bold text-[#5B639A] m-0 mb-1">A MESSAGE FOR PARENTS: Every child grows at their own pace.</h4>
-                <p class="text-xs text-slate-500 m-0 leading-snug">A BMI result should not be used to label, shame, or compare children. It is one part of a child's overall nutritional assessment. If further assessment is needed, consult a qualified dietitian/paediatrician.</p>
+       <!-- Parent Message (Firefox & html2canvas Bulletproof Fix) -->
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-6 flex items-start gap-4 w-full">
+            <span class="text-3xl shrink-0 pt-0.5" style="display: block;">📢</span>
+            <div class="flex-1 text-left w-full">
+                
+                <h4 class="font-bold text-[#5B639A] mb-1 block" style="text-align: left;">
+                    <span style="display: inline-block;">A MESSAGE FOR PARENTS: Every child grows at their own pace.</span>
+                </h4>
+                
+                <p class="text-xs text-slate-500 block m-0 leading-relaxed" style="text-align: left;">
+                    <span style="display: inline-block;">A BMI result should not be used to label, shame, or compare children.</span> 
+                    <span style="display: inline-block;">It is one part of a child's overall nutritional assessment.</span> 
+                    <span style="display: inline-block;">If further assessment is needed, consult a qualified dietitian/paediatrician.</span>
+                </p>
+                
             </div>
         </div>
         <!-- FOOTER WITH AUDIT NAMES -->
