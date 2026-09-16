@@ -3,7 +3,7 @@ const whoData = {
         160: { L: -1.2894, M: 19.0642, S: 0.13537 },
         161: { L: -1.2816, M: 19.1289, S: 0.13559 },
         162: { L: -1.2739, M: 19.1931, S: 0.1358 },
-        163: { L: -1.661, M: 19.2567, S: 0.13601 },
+        163: { L: -1.2661, M: 19.2567, S: 0.13601 },
         164: { L: -1.2583, M: 19.3197, S: 0.13622 },
         165: { L: -1.2504, M: 19.382, S: 0.13642 },
         166: { L: -1.2425, M: 19.4437, S: 0.13662 },
@@ -143,10 +143,7 @@ const whoData = {
     }
 };
 
-// --- The Application Logic ---
 // --- CLINICAL MATH FUNCTIONS ---
-
-// Converts a Z-Score into an exact Percentile
 function zScoreToPercentile(z) {
     if (z === 0.0) return 50;
     let b1 = 0.319381530, b2 = -0.356563782, b3 = 1.781477937, b4 = -1.821255978, b5 = 1.330274429;
@@ -159,8 +156,17 @@ function zScoreToPercentile(z) {
     return Math.round(percentile * 100);
 }
 
-// Function to inject data into the Report Card UI
-function populateReportCard(name, gender, displayAge, height, weight, bmi, zscore, percentile, interp) {
+// Correct Grammar for Percentiles (1st, 2nd, 3rd, 4th, etc.)
+function getOrdinalSuffix(i) {
+    let j = i % 10, k = i % 100;
+    if (j == 1 && k != 11) return i + "st";
+    if (j == 2 && k != 12) return i + "nd";
+    if (j == 3 && k != 13) return i + "rd";
+    return i + "th";
+}
+
+// Populate the UI (Now securely showing Assessor and Supervisor names)
+function populateReportCard(name, gender, displayAge, height, weight, bmi, zscore, percentile, interp, assessor, supervisor) {
     document.getElementById('rep-name').innerText = name;
     document.getElementById('rep-gender').innerText = gender;
     document.getElementById('rep-age').innerText = displayAge;
@@ -168,61 +174,64 @@ function populateReportCard(name, gender, displayAge, height, weight, bmi, zscor
     document.getElementById('rep-weight').innerText = weight;
     document.getElementById('rep-bmi').innerText = bmi;
     document.getElementById('rep-zscore').innerText = zscore;
-    document.getElementById('rep-percentile').innerText = percentile + "th";
+    document.getElementById('rep-percentile').innerText = getOrdinalSuffix(percentile);
     document.getElementById('rep-interp').innerText = interp;
+    
+    document.getElementById('rep-assessor').innerText = assessor ? assessor : "Not provided";
+    document.getElementById('rep-supervisor').innerText = supervisor ? supervisor : "Not provided";
 }
 
-// --- FORM SUBMISSION LOGIC ---
+// PDF DOWNLOAD FUNCTION
+function downloadPDF() {
+    const btnDiv = document.getElementById('action-buttons');
+    btnDiv.style.display = 'none'; // Hide buttons during print
+    
+    const element = document.getElementById('screen-report');
+    const opt = {
+      margin:       0.2,
+      filename:     'BMI_Report_Card.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        btnDiv.style.display = 'flex'; // Bring buttons back after downloading
+    });
+}
+
+// --- FORM SUBMISSION LOGIC (Assessor's Laptop) ---
 document.getElementById('assessmentForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
     try {
-        // 1. Gather Input (with manual validation to stop silent browser freezing)
         const name = document.getElementById('studentName').value;
-        
-        const genderRadio = document.querySelector('input[name="gender"]:checked');
-        if (!genderRadio) {
-            alert("Please select Male or Female.");
-            return;
-        }
-        const gender = genderRadio.value;
-        
+        const gender = document.querySelector('input[name="gender"]:checked').value;
         const dobInput = document.getElementById('dob').value;
-        if (!dobInput) {
-            alert("Please enter a Date of Birth.");
-            return;
-        }
-        
         const heightCm = parseFloat(document.getElementById('height').value);
         const weightKg = parseFloat(document.getElementById('weight').value);
+        
+        // Grab the Audit Fields
+        const assessorName = document.getElementById('assessor').value;
+        const supervisorName = document.getElementById('supervisor').value;
 
-        // 2. BMI Calculation
         const heightM = heightCm / 100;
         const bmi = weightKg / (heightM * heightM);
 
-        // 3. Age Calculation
         const dob = new Date(dobInput);
         const today = new Date();
         let ageMonths = (today.getFullYear() - dob.getFullYear()) * 12 + (today.getMonth() - dob.getMonth());
         if (today.getDate() < dob.getDate()) ageMonths--; 
 
-        // Validate Age limits
         if (ageMonths < 160 || ageMonths > 228) {
-            alert("This portal is currently configured only for ages 160 to 228 months. Student is " + ageMonths + " months old.");
+            alert("This portal is configured for ages 160 to 228 months. Student is " + ageMonths + " months old.");
             return; 
         }
 
-        // 4. WHO 2007 Logic (with safety check)
         const lms = whoData[gender][ageMonths];
-        if (!lms) {
-            alert("Error: The WHO data for age " + ageMonths + " months is missing from your code.");
-            return;
-        }
-
         const zScore = (Math.pow((bmi / lms.M), lms.L) - 1) / (lms.L * lms.S);
         const percentile = zScoreToPercentile(zScore);
 
-        // Interpretation
         let interpretation = "";
         if (zScore <= -3) interpretation = "Severe Thinness";
         else if (zScore <= -2) interpretation = "Thinness";
@@ -230,54 +239,59 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         else if (zScore <= 2) interpretation = "Overweight";
         else interpretation = "Obesity";
 
-        // Format Age nicely
         let displayAge = `${Math.floor(ageMonths / 12)} yrs, ${ageMonths % 12} mos`;
 
-        // 5. Populate the Report Card visually
-        populateReportCard(name, gender, displayAge, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation);
+        // Inject data into the page
+        populateReportCard(name, gender, displayAge, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation, assessorName, supervisorName);
 
-        // 6. Generate QR Code
+        // Build QR Code (now includes the assessor and supervisor data)
         const baseUrl = window.location.origin + window.location.pathname;
         const urlParams = new URLSearchParams({
             n: name, g: gender, a: displayAge, h: heightCm, w: weightKg, 
-            b: bmi.toFixed(1), z: zScore.toFixed(2), p: percentile, i: interpretation
+            b: bmi.toFixed(1), z: zScore.toFixed(2), p: percentile, i: interpretation,
+            as: assessorName, su: supervisorName
         });
         
-        const qrContainer = document.getElementById('qrcode');
-        qrContainer.innerHTML = "";
-        
-        if (typeof QRCode === 'undefined') {
-            qrContainer.innerText = "QR Code unavailable (check connection)";
-        } else {
-            new QRCode(qrContainer, {
-                text: `${baseUrl}?${urlParams.toString()}`,
-                width: 140,
-                height: 140,
-                colorDark : "#047857",
-                colorLight : "#ffffff"
-            });
-        }
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+            text: `${baseUrl}?${urlParams.toString()}`,
+            width: 130, height: 130, colorDark : "#047857", colorLight : "#ffffff"
+        });
 
-        // 7. Hide Form, Show Report!
+        // Show the report card
         document.getElementById('screen-form').classList.add('hidden');
         document.getElementById('screen-report').classList.remove('hidden');
 
     } catch (error) {
-        // THIS CATCHES ANY HIDDEN ERRORS AND FORCES THEM ONTO THE SCREEN
         alert("A technical error occurred:\n" + error.message);
     }
 });
 
-// --- URL SCANNER LOGIC (For parent's phone) ---
+// --- URL SCANNER LOGIC (Student/Parent's Phone) ---
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     if(params.has('n')) {
+        // Feed the URL data into the report card
         populateReportCard(
             params.get('n'), params.get('g'), params.get('a'), 
             params.get('h'), params.get('w'), params.get('b'), 
-            params.get('z'), params.get('p'), params.get('i')
+            params.get('z'), params.get('p'), params.get('i'),
+            params.get('as'), params.get('su')
         );
-        document.getElementById('qrcode').parentElement.style.display = 'none';
+        
+        // Hide the QR box since they are already on their phone
+        document.getElementById('qr-box').style.display = 'none';
+        
+        // Hide "Next Student" button, Show "Download PDF" button
+        const btnNext = document.getElementById('btn-next');
+        const btnDownload = document.getElementById('btn-download');
+        if (btnNext) btnNext.classList.add('hidden');
+        if (btnDownload) {
+            btnDownload.classList.remove('hidden');
+            btnDownload.classList.add('flex');
+        }
+
+        // Show the report card
         document.getElementById('screen-form').classList.add('hidden');
         document.getElementById('screen-report').classList.remove('hidden');
     }
