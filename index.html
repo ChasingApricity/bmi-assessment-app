@@ -109,22 +109,64 @@
             </div>
 
         <div class="grid md:grid-cols-3 gap-8">
-            <!-- Left Column: Student Details -->
+           <!-- Left Column: Student Details -->
             <div class="md:col-span-2 space-y-4">
                 <h2 class="bg-[#DFE2F2] text-[#4A55A2] font-bold px-4 py-2 rounded-t-lg inline-block tracking-wide">STUDENT DETAILS</h2>
-                <div class="bg-slate-50 p-6 rounded-b-lg rounded-tr-lg border border-slate-100 space-y-3">
-                    <div class="flex"><span class="w-40 font-semibold text-slate-600">Name of Student:</span><div id="rep-name" class="data-line"></div></div>
-                    <div class="flex"><span class="w-40 font-semibold text-slate-600">Gender:</span><div id="rep-gender" class="data-line capitalize"></div></div>
-                    <div class="flex"><span class="w-40 font-semibold text-slate-600">Age:</span><div id="rep-age" class="data-line"></div> <span class="ml-2 text-slate-500">years</span></div>
-                    <div class="flex"><span class="w-40 font-semibold text-slate-600">Height:</span><div id="rep-height" class="data-line"></div> <span class="ml-2 text-slate-500">cm</span></div>
-                    <div class="flex"><span class="w-40 font-semibold text-slate-600">Weight:</span><div id="rep-weight" class="data-line"></div> <span class="ml-2 text-slate-500">kg</span></div>
-                    <div class="flex"><span class="w-40 font-semibold text-slate-600">BMI:</span><div id="rep-bmi" class="data-line"></div> <span class="ml-2 text-slate-500">kg/m²</span></div>
-                    <div class="flex"><span class="w-40 font-semibold text-slate-600">BMI-for-Age Z-score:</span><div id="rep-zscore" class="data-line"></div> <span class="ml-2 text-slate-500">SD</span></div>
-                    <div class="flex"><span class="w-40 font-semibold text-slate-600">BMI-for-Age Percentile:</span><div id="rep-percentile" class="data-line"></div> <span class="ml-2 text-slate-500">percentile</span></div>
-                    <div class="flex"><span class="w-40 font-semibold text-slate-600">Interpretation:</span><div id="rep-interp" class="data-line text-emerald-600 font-bold"></div></div>
+                <div class="bg-slate-50 p-6 rounded-b-lg rounded-tr-lg border border-slate-100 space-y-4 text-sm">
+                    
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                        <span class="col-span-5 font-semibold text-slate-600">Name of Student:</span>
+                        <div class="col-span-7 border-b-2 border-dotted border-slate-300 text-center font-bold text-slate-900 pb-0.5" id="rep-name"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                        <span class="col-span-5 font-semibold text-slate-600">Gender:</span>
+                        <div class="col-span-7 border-b-2 border-dotted border-slate-300 text-center font-bold text-slate-900 capitalize pb-0.5" id="rep-gender"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                        <span class="col-span-5 font-semibold text-slate-600">Age:</span>
+                        <div class="col-span-5 border-b-2 border-dotted border-slate-300 text-center font-bold text-slate-900 pb-0.5" id="rep-age"></div>
+                        <span class="col-span-2 text-slate-500 text-right">years</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                        <span class="col-span-5 font-semibold text-slate-600">Height:</span>
+                        <div class="col-span-5 border-b-2 border-dotted border-slate-300 text-center font-bold text-slate-900 pb-0.5" id="rep-height"></div>
+                        <span class="col-span-2 text-slate-500 text-right">cm</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                        <span class="col-span-5 font-semibold text-slate-600">Weight:</span>
+                        <div class="col-span-5 border-b-2 border-dotted border-slate-300 text-center font-bold text-slate-900 pb-0.5" id="rep-weight"></div>
+                        <span class="col-span-2 text-slate-500 text-right">kg</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                        <span class="col-span-5 font-semibold text-slate-600">BMI:</span>
+                        <div class="col-span-5 border-b-2 border-dotted border-slate-300 text-center font-bold text-slate-900 pb-0.5" id="rep-bmi"></div>
+                        <span class="col-span-2 text-slate-500 text-right">kg/m²</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                        <span class="col-span-5 font-semibold text-slate-600">BMI-for-Age Z-score:</span>
+                        <div class="col-span-5 border-b-2 border-dotted border-slate-300 text-center font-bold text-slate-900 pb-0.5" id="rep-zscore"></div>
+                        <span class="col-span-2 text-slate-500 text-right">SD</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                        <span class="col-span-5 font-semibold text-slate-600">BMI-for-Age Percentile:</span>
+                        <div class="col-span-5 border-b-2 border-dotted border-slate-300 text-center font-bold text-slate-900 pb-0.5" id="rep-percentile"></div>
+                        <span class="col-span-2 text-slate-500 text-right">percentile</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                        <span class="col-span-5 font-semibold text-slate-600">Interpretation:</span>
+                        <div class="col-span-7 border-b-2 border-dotted border-slate-300 text-center font-bold text-emerald-600 pb-0.5" id="rep-interp"></div>
+                    </div>
+
                 </div>
             </div>
-
             <!-- Right Column: What is BMI & QR Code -->
             <div class="space-y-6">
                 <div class="bg-[#F3F0E6] p-5 rounded-xl border border-[#E5DECD]">
