@@ -145,59 +145,119 @@ const whoData = {
 };
 
 // --- The Application Logic ---
-document.querySelector('form').addEventListener('submit', function(event) {
-    event.preventDefault(); // Stop page refresh
+// --- CLINICAL MATH FUNCTIONS ---
 
-    // 1. Gather input
+// Converts a Z-Score into an exact Percentile (Standard Normal CDF)
+function zScoreToPercentile(z) {
+    if (z === 0.0) return 50;
+    let b1 = 0.319381530, b2 = -0.356563782, b3 = 1.781477937, b4 = -1.821255978, b5 = 1.330274429;
+    let p = 0.2316419, c = 0.39894228;
+    let sign = (z > 0) ? 1 : -1;
+    z = Math.abs(z);
+    let t = 1.0 / (1.0 + p * z);
+    let cdf = 1.0 - c * Math.exp(-z * z / 2.0) * t * (t * (t * (t * (t * b5 + b4) + b3) + b2) + b1);
+    let percentile = (sign === 1) ? cdf : (1.0 - cdf);
+    return Math.round(percentile * 100);
+}
+
+// Function to inject data into the Report Card UI
+function populateReportCard(name, gender, displayAge, height, weight, bmi, zscore, percentile, interp) {
+    document.getElementById('rep-name').innerText = name;
+    document.getElementById('rep-gender').innerText = gender;
+    document.getElementById('rep-age').innerText = displayAge;
+    document.getElementById('rep-height').innerText = height;
+    document.getElementById('rep-weight').innerText = weight;
+    document.getElementById('rep-bmi').innerText = bmi;
+    document.getElementById('rep-zscore').innerText = zscore;
+    document.getElementById('rep-percentile').innerText = percentile + "th";
+    document.getElementById('rep-interp').innerText = interp;
+}
+
+// --- FORM SUBMISSION LOGIC ---
+document.getElementById('assessmentForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // 1. Gather Input
     const name = document.getElementById('studentName').value;
     const gender = document.querySelector('input[name="gender"]:checked').value;
     const dobInput = document.getElementById('dob').value;
     const heightCm = parseFloat(document.getElementById('height').value);
     const weightKg = parseFloat(document.getElementById('weight').value);
 
-    // 2. Calculate Standard BMI
+    // 2. BMI Calculation
     const heightM = heightCm / 100;
     const bmi = weightKg / (heightM * heightM);
 
-    // 3. Calculate Exact Age in Months
+    // 3. Age Calculation
     const dob = new Date(dobInput);
     const today = new Date();
     let ageMonths = (today.getFullYear() - dob.getFullYear()) * 12 + (today.getMonth() - dob.getMonth());
-    if (today.getDate() < dob.getDate()) {
-        ageMonths--; 
-    }
+    if (today.getDate() < dob.getDate()) ageMonths--; 
 
-    // 4. Validate Age (Must be between 14 and 19 years / 160-228 months)
+    // Validate Age limits
     if (ageMonths < 160 || ageMonths > 228) {
-        alert("This portal is currently configured only for ages 13 to 19 (160-228 months). Student is " + ageMonths + " months old.");
+        alert("This portal is currently configured only for ages 160 to 228 months. Student is " + ageMonths + " months old.");
         return; 
     }
 
-    if (gender === 'male') {
-        alert("We need to add the boys data first! Try a female student to test the logic.");
-        return;
-    }
-
-    // 5. Run the WHO Z-Score Calculation
-    const lms = whoData[gender][ageMonths]; // Fetch the exact L, M, S for this age/gender
-    
-    // The official WHO math formula: Z = [ (BMI / M)^L - 1 ] / (L * S)
+    // 4. WHO 2007 Logic
+    const lms = whoData[gender][ageMonths];
     const zScore = (Math.pow((bmi / lms.M), lms.L) - 1) / (lms.L * lms.S);
+    const percentile = zScoreToPercentile(zScore);
 
-    // 6. Interpret the Result based on WHO standard cutoffs
+    // Interpretation
     let interpretation = "";
-    if (zScore <= -3) {
-        interpretation = "Severe Thinness";
-    } else if (zScore <= -2) {
-        interpretation = "Thinness";
-    } else if (zScore <= 1) {
-        interpretation = "Normal (Healthy Weight)";
-    } else if (zScore <= 2) {
-        interpretation = "Overweight";
-    } else {
-        interpretation = "Obesity";
-    }
+    if (zScore <= -3) interpretation = "Severe Thinness";
+    else if (zScore <= -2) interpretation = "Thinness";
+    else if (zScore <= 1) interpretation = "Normal (Healthy Weight)";
+    else if (zScore <= 2) interpretation = "Overweight";
+    else interpretation = "Obesity";
 
-    // 7. Show the final clinical result
-    alert(`CLINICAL RESULT\n\nStudent: ${name}\nAge: ${ageMonths} months\nBMI: ${bmi.toFixed(1)}\nZ-Score: ${zScore.toFixed(2)}\n\nInterpretation: ${interpretation}`);
+    // Format Age nicely for the report (e.g., "15 yrs, 2 mos")
+    let displayAge = `${Math.floor(ageMonths / 12)} yrs, ${ageMonths % 12} mos`;
+
+    // 5. Populate the Report Card visually
+    populateReportCard(name, gender, displayAge, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation);
+
+    // 6. Generate the custom QR Code Link for the student
+    const baseUrl = window.location.origin + window.location.pathname;
+    const urlParams = new URLSearchParams({
+        n: name, g: gender, a: displayAge, h: heightCm, w: weightKg, 
+        b: bmi.toFixed(1), z: zScore.toFixed(2), p: percentile, i: interpretation
+    });
+    
+    // Draw the QR Code
+    document.getElementById('qrcode').innerHTML = "";
+    new QRCode(document.getElementById("qrcode"), {
+        text: `${baseUrl}?${urlParams.toString()}`,
+        width: 140,
+        height: 140,
+        colorDark : "#047857", // SRWC Emerald Green
+        colorLight : "#ffffff"
+    });
+
+    // 7. Hide Form, Show Report!
+    document.getElementById('screen-form').classList.add('hidden');
+    document.getElementById('screen-report').classList.remove('hidden');
+});
+
+// --- URL SCANNER LOGIC (When a parent scans the QR code on their phone) ---
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    
+    // If the URL has a student name in it, it means someone scanned the QR code!
+    if(params.has('n')) {
+        populateReportCard(
+            params.get('n'), params.get('g'), params.get('a'), 
+            params.get('h'), params.get('w'), params.get('b'), 
+            params.get('z'), params.get('p'), params.get('i')
+        );
+        
+        // Hide the QR code box on their phone (they don't need to scan their own phone)
+        document.getElementById('qrcode').parentElement.style.display = 'none';
+        
+        // Hide Form, Show Report instantly
+        document.getElementById('screen-form').classList.add('hidden');
+        document.getElementById('screen-report').classList.remove('hidden');
+    }
 });
