@@ -155,7 +155,6 @@ function zScoreToPercentile(z) {
     return Math.round(percentile * 100);
 }
 
-// Strict grammar handler ensuring 83rd, 36th, 11th, etc.
 function getOrdinalSuffix(val) {
     let i = Number(val);
     if (isNaN(i)) return val + "th";
@@ -166,7 +165,6 @@ function getOrdinalSuffix(val) {
     return i + "th";
 }
 
-// Function to populate every field on the report card securely
 function populateReportCard(name, gender, displayAge, height, weight, bmi, zscore, percentile, interp, assessor, supervisor) {
     document.getElementById('rep-name').innerText = name || "";
     document.getElementById('rep-gender').innerText = gender || "";
@@ -182,17 +180,17 @@ function populateReportCard(name, gender, displayAge, height, weight, bmi, zscor
     document.getElementById('rep-supervisor').innerText = supervisor ? supervisor : "Not provided";
 }
 
-// PDF DOWNLOAD FUNCTION (Fully repaired)
+// PDF DOWNLOAD FUNCTION (Fully intact and fixed)
 function downloadPDF() {
     const btnDiv = document.getElementById('action-buttons');
     btnDiv.style.display = 'none';
     
     const element = document.getElementById('screen-report');
     const opt = {
-      margin:       0.1,
+      margin:       [0.05, 0.05, 0.05, 0.05],
       filename:     'SRWC_BMI_Report_Card.pdf',
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
