@@ -109,7 +109,7 @@
             </div>
         </div> <!-- <--- ADD THIS CLOSING DIV TAG HERE -->
 
-        <div class="grid md:grid-cols-3 gap-8">
+     <div class="grid md:grid-cols-3 gap-8">
             <!-- Left Column: Student Details -->
             <div class="md:col-span-2 space-y-4">
                 <h2 class="bg-[#DFE2F2] text-[#4A55A2] font-bold px-4 py-2 rounded-t-lg inline-block tracking-wide">STUDENT DETAILS</h2>
@@ -225,47 +225,6 @@
         </div>
 
     </div> <!-- <--- CLOSE THE SCREEN-REPORT DIV HERE -->
-        <!-- Educational Tiles -->
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mt-8">
-            <div class="bg-[#EAF3EA] p-3 rounded-lg text-center border border-[#D1E6D1]"><span class="text-2xl block mb-1">🥗</span><h4 class="font-bold text-[#4B7A4B] text-xs leading-tight">Eat a Variety<br>of Foods</h4></div>
-            <div class="bg-[#E6F0F9] p-3 rounded-lg text-center border border-[#CDE1F0]"><span class="text-2xl block mb-1">💧</span><h4 class="font-bold text-[#4B7399] text-xs leading-tight">Stay<br>Hydrated</h4></div>
-            <div class="bg-[#F9EFE6] p-3 rounded-lg text-center border border-[#F0DDC5]"><span class="text-2xl block mb-1">🥜</span><h4 class="font-bold text-[#A67B4D] text-xs leading-tight">Choose Smart<br>Snacks</h4></div>
-            <div class="bg-[#F9E6E9] p-3 rounded-lg text-center border border-[#F0CDD3]"><span class="text-2xl block mb-1">🏃🏽‍♀️</span><h4 class="font-bold text-[#A64D5B] text-xs leading-tight">Be Physically<br>Active</h4></div>
-            <div class="bg-[#EAE6F9] p-3 rounded-lg text-center border border-[#D5CDF0]"><span class="text-2xl block mb-1">😴</span><h4 class="font-bold text-[#674DA6] text-xs leading-tight">Sleep<br>Well</h4></div>
-            <div class="bg-[#E6F9F3] p-3 rounded-lg text-center border border-[#CDF0E5]"><span class="text-2xl block mb-1">📱</span><h4 class="font-bold text-[#4D9981] text-xs leading-tight">Balance<br>Screen Time</h4></div>
-        </div>
-
-        <!-- Parent Message -->
-        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-6 flex items-start space-x-4">
-            <span class="text-3xl">📢</span>
-            <div>
-                <h4 class="font-bold text-[#5B639A]">A MESSAGE FOR PARENTS: Every child grows at their own pace.</h4>
-                <p class="text-xs text-slate-500 mt-1">A BMI result should not be used to label, shame, or compare children. It is one part of a child's overall nutritional assessment. If further assessment is needed, consult a qualified dietitian/paediatrician.</p>
-            </div>
-        </div>
-
-        <!-- NEW UPDATED FOOTER WITH AUDIT NAMES -->
-        <div class="border-t border-slate-200 mt-8 pt-6 flex flex-col md:flex-row justify-between text-xs text-slate-500">
-            <div><span class="font-bold text-slate-700">Assessed by:</span> <span id="rep-assessor" class="font-semibold text-slate-800 underline decoration-slate-300 underline-offset-4 ml-1"></span></div>
-            <div class="mt-2 md:mt-0"><span class="font-bold text-slate-700">Under the Supervision of:</span> <span id="rep-supervisor" class="font-semibold text-slate-800 underline decoration-slate-300 underline-offset-4 ml-1"></span></div>
-            <div class="mt-4 md:mt-0 flex items-center justify-center space-x-2"><span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded font-bold">SRWC Diet Studio</span></div>
-        </div>
-        
-        <!-- BUTTONS (Dynamic based on device) -->
-        <div id="action-buttons" class="mt-8 flex justify-center space-x-4">
-            <!-- Hidden by default, appears only on the Student's Phone -->
-            <button id="btn-download" onclick="downloadPDF()" class="hidden bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-emerald-700 transition shadow-md items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Download PDF
-            </button>
-            
-            <!-- Visible by default on the Assessor's Laptop -->
-            <button id="btn-next" onclick="window.location.reload()" class="bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-lg hover:bg-slate-300 transition">
-                Next Student
-            </button>
-        </div>
-
-    </div>
 
     <script src="script.js"></script>
 </body>
