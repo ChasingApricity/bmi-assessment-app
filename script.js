@@ -142,7 +142,6 @@ const whoData = {
         228: { L: -0.8419, M: 22.1883, S: 0.12948 }
     }
 };
-
 // --- CLINICAL MATH FUNCTIONS ---
 function zScoreToPercentile(z) {
     if (z === 0.0) return 50;
@@ -156,7 +155,6 @@ function zScoreToPercentile(z) {
     return Math.round(percentile * 100);
 }
 
-// Correct Grammar for Percentiles (1st, 2nd, 3rd, 4th, etc.)
 function getOrdinalSuffix(i) {
     let j = i % 10, k = i % 100;
     if (j == 1 && k != 11) return i + "st";
@@ -165,18 +163,19 @@ function getOrdinalSuffix(i) {
     return i + "th";
 }
 
-// Populate the UI (Now securely showing Assessor and Supervisor names)
+// Function to populate every field on the report card securely
 function populateReportCard(name, gender, displayAge, height, weight, bmi, zscore, percentile, interp, assessor, supervisor) {
-    document.getElementById('rep-name').innerText = name;
-    document.getElementById('rep-gender').innerText = gender;
-    document.getElementById('rep-age').innerText = displayAge;
-    document.getElementById('rep-height').innerText = height;
-    document.getElementById('rep-weight').innerText = weight;
-    document.getElementById('rep-bmi').innerText = bmi;
-    document.getElementById('rep-zscore').innerText = zscore;
+    document.getElementById('rep-name').innerText = name || "";
+    document.getElementById('rep-gender').innerText = gender || "";
+    document.getElementById('rep-age').innerText = displayAge || "";
+    document.getElementById('rep-height').innerText = height || "";
+    document.getElementById('rep-weight').innerText = weight || "";
+    document.getElementById('rep-bmi').innerText = bmi || "";
+    document.getElementById('rep-zscore').innerText = zscore || "";
     document.getElementById('rep-percentile').innerText = getOrdinalSuffix(percentile);
-    document.getElementById('rep-interp').innerText = interp;
+    document.getElementById('rep-interp').innerText = interp || "";
     
+    // Explicitly inject the Assessor and Supervisor names into the footer
     document.getElementById('rep-assessor').innerText = assessor ? assessor : "Not provided";
     document.getElementById('rep-supervisor').innerText = supervisor ? supervisor : "Not provided";
 }
@@ -184,7 +183,7 @@ function populateReportCard(name, gender, displayAge, height, weight, bmi, zscor
 // PDF DOWNLOAD FUNCTION
 function downloadPDF() {
     const btnDiv = document.getElementById('action-buttons');
-    btnDiv.style.display = 'none'; // Hide buttons during print
+    btnDiv.style.display = 'none';
     
     const element = document.getElementById('screen-report');
     const opt = {
@@ -196,11 +195,11 @@ function downloadPDF() {
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
-        btnDiv.style.display = 'flex'; // Bring buttons back after downloading
+        btnDiv.style.display = 'flex';
     });
 }
 
-// --- FORM SUBMISSION LOGIC (Assessor's Laptop) ---
+// --- FORM SUBMISSION LOGIC ---
 document.getElementById('assessmentForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -211,7 +210,7 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         const heightCm = parseFloat(document.getElementById('height').value);
         const weightKg = parseFloat(document.getElementById('weight').value);
         
-        // Grab the Audit Fields
+        // Grab names directly from the input boxes
         const assessorName = document.getElementById('assessor').value;
         const supervisorName = document.getElementById('supervisor').value;
 
@@ -241,10 +240,10 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
 
         let displayAge = `${Math.floor(ageMonths / 12)} yrs, ${ageMonths % 12} mos`;
 
-        // Inject data into the page
+        // Pass names into the report population function
         populateReportCard(name, gender, displayAge, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation, assessorName, supervisorName);
 
-        // Build QR Code (now includes the assessor and supervisor data)
+        // Build URL parameters for QR code (including assessor 'as' and supervisor 'su')
         const baseUrl = window.location.origin + window.location.pathname;
         const urlParams = new URLSearchParams({
             n: name, g: gender, a: displayAge, h: heightCm, w: weightKg, 
@@ -258,7 +257,6 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
             width: 130, height: 130, colorDark : "#047857", colorLight : "#ffffff"
         });
 
-        // Show the report card
         document.getElementById('screen-form').classList.add('hidden');
         document.getElementById('screen-report').classList.remove('hidden');
 
@@ -267,11 +265,11 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
     }
 });
 
-// --- URL SCANNER LOGIC (Student/Parent's Phone) ---
+// --- URL SCANNER LOGIC (Student's Phone) ---
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     if(params.has('n')) {
-        // Feed the URL data into the report card
+        // Extract names from the URL parameters when scanned
         populateReportCard(
             params.get('n'), params.get('g'), params.get('a'), 
             params.get('h'), params.get('w'), params.get('b'), 
@@ -279,10 +277,8 @@ window.addEventListener('DOMContentLoaded', () => {
             params.get('as'), params.get('su')
         );
         
-        // Hide the QR box since they are already on their phone
         document.getElementById('qr-box').style.display = 'none';
         
-        // Hide "Next Student" button, Show "Download PDF" button
         const btnNext = document.getElementById('btn-next');
         const btnDownload = document.getElementById('btn-download');
         if (btnNext) btnNext.classList.add('hidden');
@@ -291,7 +287,6 @@ window.addEventListener('DOMContentLoaded', () => {
             btnDownload.classList.add('flex');
         }
 
-        // Show the report card
         document.getElementById('screen-form').classList.add('hidden');
         document.getElementById('screen-report').classList.remove('hidden');
     }
