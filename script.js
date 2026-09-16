@@ -1,5 +1,3 @@
-// --- WHO 2007 Data (Girls: 14 to 19 Years / 168 to 228 Months) ---
-// I have extracted this directly from the WHO Excel file you provided!
 const whoData = {
     female: {
         160: { L: -1.2894, M: 19.0642, S: 0.13537 },
