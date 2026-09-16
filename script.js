@@ -189,7 +189,7 @@ function downloadPDF() {
       margin:       [0.1, 0.1, 0.1, 0.1],
       filename:     'SRWC_BMI_Report_Card.pdf',
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 1.5, useCORS: true, logging: false, windowWidth: 800 },
+      html2canvas:  { scale: 1.8, useCORS: true, logging: false },
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
@@ -197,6 +197,8 @@ function downloadPDF() {
         btnDiv.style.display = 'flex';
     });
 }
+
+
 // --- FORM SUBMISSION LOGIC ---
 document.getElementById('assessmentForm').addEventListener('submit', function(event) {
     event.preventDefault();
