@@ -16,7 +16,6 @@
         body { font-family: 'Inter', sans-serif; }
         input[type="date"]::-webkit-calendar-picker-indicator { opacity: 1; display: block; cursor: pointer; width: 24px; height: 24px; color: #10b981; }
         .data-line { border-bottom: 2px dotted #cbd5e1; flex-grow: 1; margin-left: 8px; text-align: center; font-weight: 600; color: #1e293b; padding-bottom: 2px; }
-        /* Adjusted scrollbar for better UX while keeping it subtle */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -43,7 +42,7 @@
             </div>
         </div>
 
-        <form id="assessmentForm" class="px-8 pt-8 pb-10 space-y-8">
+        <form id="assessmentForm" class="px-8 pt-8 pb-8 space-y-8">
             <div class="space-y-2">
                 <label for="studentName" class="block text-sm font-semibold text-slate-700">Student Name</label>
                 <input type="text" id="studentName" name="studentName" required placeholder="Enter full name" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
@@ -91,12 +90,17 @@
                 </div>
             </div>
 
-            <div class="pt-4">
+            <div class="pt-2">
                 <button type="submit" class="w-full bg-slate-900 text-white font-bold text-lg py-4 px-6 rounded-xl hover:bg-emerald-600 transition-all duration-300">
                     Calculate Result
                 </button>
             </div>
         </form>
+
+        <!-- DEVELOPER CREDIT (Input Form) -->
+        <div class="pb-6 text-center">
+            <p class="text-[11px] text-slate-400 tracking-wide font-medium">Designed & Developed by <span class="font-semibold text-slate-600">Munazza Anjum Farooqui</span></p>
+        </div>
     </div>
 
     <!-- ========================================== -->
@@ -174,7 +178,7 @@
                 </div>
             </div>
             
-           <!-- Right Column: What is BMI & QR Code -->
+            <!-- Right Column: What is BMI & QR Code -->
             <div class="flex flex-col h-full justify-center space-y-6">
                 <div class="bg-[#F3F0E6] p-5 rounded-xl border border-[#E5DECD] w-full">
                     <h3 class="font-bold text-[#8B7355] text-lg mb-2">What is BMI?</h3>
@@ -199,39 +203,45 @@
             <div class="bg-[#E6F9F3] p-3 rounded-lg text-center border border-[#CDF0E5]"><span class="text-2xl block mb-1">📱</span><h4 class="font-bold text-[#4D9981] text-xs leading-tight">Balance<br>Screen Time</h4></div>
         </div>
 
-       <!-- Parent Message (Firefox & html2canvas Bulletproof Fix) -->
+        <!-- Parent Message (Firefox & html2canvas Bulletproof Fix) -->
         <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-6 flex items-start gap-4 w-full">
             <span class="text-3xl shrink-0 pt-0.5" style="display: block;">📢</span>
             <div class="flex-1 text-left w-full">
-                
                 <h4 class="font-bold text-[#5B639A] mb-1 block" style="text-align: left;">
                     <span style="display: inline-block;">A MESSAGE FOR PARENTS: Every child grows at their own pace.</span>
                 </h4>
-                
                 <p class="text-xs text-slate-500 block m-0 leading-relaxed" style="text-align: left;">
                     <span style="display: inline-block;">A BMI result should not be used to label, shame, or compare children.</span> 
                     <span style="display: inline-block;">It is one part of a child's overall nutritional assessment.</span> 
                     <span style="display: inline-block;">If further assessment is needed, consult a qualified dietitian/paediatrician.</span>
                 </p>
-                
             </div>
         </div>
+
         <!-- FOOTER WITH AUDIT NAMES -->
-        <div class="border-t border-slate-200 mt-8 pt-6 flex flex-col md:flex-row justify-between text-xs text-slate-500">
+        <div class="border-t border-slate-200 mt-8 pt-5 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
             <div><span class="font-bold text-slate-700">Assessed by:</span> <span id="rep-assessor" class="font-semibold text-slate-800 underline decoration-slate-300 underline-offset-4 ml-1"></span></div>
             <div class="mt-2 md:mt-0"><span class="font-bold text-slate-700">Under the Supervision of:</span> <span id="rep-supervisor" class="font-semibold text-slate-800 underline decoration-slate-300 underline-offset-4 ml-1"></span></div>
-            <div class="mt-4 md:mt-0 flex items-center justify-center space-x-2"><span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded font-bold">SRWC Diet Studio</span></div>
+            
+            <div class="mt-4 md:mt-0">
+                <span class="inline-block px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-md font-bold text-[11px] tracking-wide" style="line-height: 1;">SRWC Diet Studio</span>
+            </div>
+        </div>
+
+        <!-- DEVELOPER CREDIT (Report Page & PDF Export) -->
+        <div class="mt-6 pt-3 border-t border-slate-100 text-center text-[11px] text-slate-400" style="text-align: center;">
+            <span style="display: inline-block; word-spacing: 0px !important;">
+                Designed & Developed by <strong class="font-semibold text-slate-600">Munazza Anjum Farooqui</strong>
+            </span>
         </div>
         
         <!-- BUTTONS (Dynamic based on device) -->
         <div id="action-buttons" class="mt-8 flex justify-center space-x-4">
-            <!-- Hidden by default, appears only on the Student's Phone -->
             <button id="btn-download" onclick="downloadPDF()" class="hidden bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-emerald-700 transition shadow-md items-center">
                 <svg class="w-5 h-5 mr-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Download PDF
             </button>
             
-            <!-- Visible by default on the Assessor's Laptop -->
             <button id="btn-next" onclick="window.location.reload()" class="bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-lg hover:bg-slate-300 transition">
                 Next Student
             </button>
