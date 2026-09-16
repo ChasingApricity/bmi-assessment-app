@@ -178,15 +178,15 @@ function populateReportCard(name, gender, displayAge, height, weight, bmi, zscor
     
     document.getElementById('rep-assessor').innerText = assessor ? assessor : "Not provided";
     document.getElementById('rep-supervisor').innerText = supervisor ? supervisor : "Not provided";
-}
-if (typeof html2canvas === 'undefined' || !((window.jspdf && window.jspdf.jsPDF) || window.jsPDF)) {
-    alert('PDF libraries did not load. Check your internet connection and reload the page.');
-    return;
-}
+
 // PDF DOWNLOAD FUNCTION (Scaled down to fit 100% of the report on a single page)
 const PDF_RENDER_WIDTH = 1100;
 
 async function downloadPDF() {
+if (typeof html2canvas === 'undefined' || !((window.jspdf && window.jspdf.jsPDF) || window.jsPDF)) {
+    alert('PDF libraries did not load. Check your internet connection and reload the page.');
+    return;
+}
     const btnDiv  = document.getElementById('action-buttons');
     const element = document.getElementById('screen-report');
     const meta    = document.querySelector('meta[name="viewport"]');
