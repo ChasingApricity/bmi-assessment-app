@@ -147,7 +147,7 @@ const whoData = {
 // --- The Application Logic ---
 // --- CLINICAL MATH FUNCTIONS ---
 
-// Converts a Z-Score into an exact Percentile (Standard Normal CDF)
+// Converts a Z-Score into an exact Percentile
 function zScoreToPercentile(z) {
     if (z === 0.0) return 50;
     let b1 = 0.319381530, b2 = -0.356563782, b3 = 1.781477937, b4 = -1.821255978, b5 = 1.330274429;
@@ -177,86 +177,108 @@ function populateReportCard(name, gender, displayAge, height, weight, bmi, zscor
 document.getElementById('assessmentForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    // 1. Gather Input
-    const name = document.getElementById('studentName').value;
-    const gender = document.querySelector('input[name="gender"]:checked').value;
-    const dobInput = document.getElementById('dob').value;
-    const heightCm = parseFloat(document.getElementById('height').value);
-    const weightKg = parseFloat(document.getElementById('weight').value);
+    try {
+        // 1. Gather Input (with manual validation to stop silent browser freezing)
+        const name = document.getElementById('studentName').value;
+        
+        const genderRadio = document.querySelector('input[name="gender"]:checked');
+        if (!genderRadio) {
+            alert("Please select Male or Female.");
+            return;
+        }
+        const gender = genderRadio.value;
+        
+        const dobInput = document.getElementById('dob').value;
+        if (!dobInput) {
+            alert("Please enter a Date of Birth.");
+            return;
+        }
+        
+        const heightCm = parseFloat(document.getElementById('height').value);
+        const weightKg = parseFloat(document.getElementById('weight').value);
 
-    // 2. BMI Calculation
-    const heightM = heightCm / 100;
-    const bmi = weightKg / (heightM * heightM);
+        // 2. BMI Calculation
+        const heightM = heightCm / 100;
+        const bmi = weightKg / (heightM * heightM);
 
-    // 3. Age Calculation
-    const dob = new Date(dobInput);
-    const today = new Date();
-    let ageMonths = (today.getFullYear() - dob.getFullYear()) * 12 + (today.getMonth() - dob.getMonth());
-    if (today.getDate() < dob.getDate()) ageMonths--; 
+        // 3. Age Calculation
+        const dob = new Date(dobInput);
+        const today = new Date();
+        let ageMonths = (today.getFullYear() - dob.getFullYear()) * 12 + (today.getMonth() - dob.getMonth());
+        if (today.getDate() < dob.getDate()) ageMonths--; 
 
-    // Validate Age limits
-    if (ageMonths < 160 || ageMonths > 228) {
-        alert("This portal is currently configured only for ages 160 to 228 months. Student is " + ageMonths + " months old.");
-        return; 
+        // Validate Age limits
+        if (ageMonths < 160 || ageMonths > 228) {
+            alert("This portal is currently configured only for ages 160 to 228 months. Student is " + ageMonths + " months old.");
+            return; 
+        }
+
+        // 4. WHO 2007 Logic (with safety check)
+        const lms = whoData[gender][ageMonths];
+        if (!lms) {
+            alert("Error: The WHO data for age " + ageMonths + " months is missing from your code.");
+            return;
+        }
+
+        const zScore = (Math.pow((bmi / lms.M), lms.L) - 1) / (lms.L * lms.S);
+        const percentile = zScoreToPercentile(zScore);
+
+        // Interpretation
+        let interpretation = "";
+        if (zScore <= -3) interpretation = "Severe Thinness";
+        else if (zScore <= -2) interpretation = "Thinness";
+        else if (zScore <= 1) interpretation = "Normal (Healthy Weight)";
+        else if (zScore <= 2) interpretation = "Overweight";
+        else interpretation = "Obesity";
+
+        // Format Age nicely
+        let displayAge = `${Math.floor(ageMonths / 12)} yrs, ${ageMonths % 12} mos`;
+
+        // 5. Populate the Report Card visually
+        populateReportCard(name, gender, displayAge, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation);
+
+        // 6. Generate QR Code
+        const baseUrl = window.location.origin + window.location.pathname;
+        const urlParams = new URLSearchParams({
+            n: name, g: gender, a: displayAge, h: heightCm, w: weightKg, 
+            b: bmi.toFixed(1), z: zScore.toFixed(2), p: percentile, i: interpretation
+        });
+        
+        const qrContainer = document.getElementById('qrcode');
+        qrContainer.innerHTML = "";
+        
+        if (typeof QRCode === 'undefined') {
+            qrContainer.innerText = "QR Code unavailable (check connection)";
+        } else {
+            new QRCode(qrContainer, {
+                text: `${baseUrl}?${urlParams.toString()}`,
+                width: 140,
+                height: 140,
+                colorDark : "#047857",
+                colorLight : "#ffffff"
+            });
+        }
+
+        // 7. Hide Form, Show Report!
+        document.getElementById('screen-form').classList.add('hidden');
+        document.getElementById('screen-report').classList.remove('hidden');
+
+    } catch (error) {
+        // THIS CATCHES ANY HIDDEN ERRORS AND FORCES THEM ONTO THE SCREEN
+        alert("A technical error occurred:\n" + error.message);
     }
-
-    // 4. WHO 2007 Logic
-    const lms = whoData[gender][ageMonths];
-    const zScore = (Math.pow((bmi / lms.M), lms.L) - 1) / (lms.L * lms.S);
-    const percentile = zScoreToPercentile(zScore);
-
-    // Interpretation
-    let interpretation = "";
-    if (zScore <= -3) interpretation = "Severe Thinness";
-    else if (zScore <= -2) interpretation = "Thinness";
-    else if (zScore <= 1) interpretation = "Normal (Healthy Weight)";
-    else if (zScore <= 2) interpretation = "Overweight";
-    else interpretation = "Obesity";
-
-    // Format Age nicely for the report (e.g., "15 yrs, 2 mos")
-    let displayAge = `${Math.floor(ageMonths / 12)} yrs, ${ageMonths % 12} mos`;
-
-    // 5. Populate the Report Card visually
-    populateReportCard(name, gender, displayAge, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation);
-
-    // 6. Generate the custom QR Code Link for the student
-    const baseUrl = window.location.origin + window.location.pathname;
-    const urlParams = new URLSearchParams({
-        n: name, g: gender, a: displayAge, h: heightCm, w: weightKg, 
-        b: bmi.toFixed(1), z: zScore.toFixed(2), p: percentile, i: interpretation
-    });
-    
-    // Draw the QR Code
-    document.getElementById('qrcode').innerHTML = "";
-    new QRCode(document.getElementById("qrcode"), {
-        text: `${baseUrl}?${urlParams.toString()}`,
-        width: 140,
-        height: 140,
-        colorDark : "#047857", // SRWC Emerald Green
-        colorLight : "#ffffff"
-    });
-
-    // 7. Hide Form, Show Report!
-    document.getElementById('screen-form').classList.add('hidden');
-    document.getElementById('screen-report').classList.remove('hidden');
 });
 
-// --- URL SCANNER LOGIC (When a parent scans the QR code on their phone) ---
+// --- URL SCANNER LOGIC (For parent's phone) ---
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
-    
-    // If the URL has a student name in it, it means someone scanned the QR code!
     if(params.has('n')) {
         populateReportCard(
             params.get('n'), params.get('g'), params.get('a'), 
             params.get('h'), params.get('w'), params.get('b'), 
             params.get('z'), params.get('p'), params.get('i')
         );
-        
-        // Hide the QR code box on their phone (they don't need to scan their own phone)
         document.getElementById('qrcode').parentElement.style.display = 'none';
-        
-        // Hide Form, Show Report instantly
         document.getElementById('screen-form').classList.add('hidden');
         document.getElementById('screen-report').classList.remove('hidden');
     }
