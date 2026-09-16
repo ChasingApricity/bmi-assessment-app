@@ -180,24 +180,57 @@ function populateReportCard(name, gender, displayAge, height, weight, bmi, zscor
     document.getElementById('rep-supervisor').innerText = supervisor ? supervisor : "Not provided";
 }
 // PDF DOWNLOAD FUNCTION (Scaled down to fit 100% of the report on a single page)
-function downloadPDF() {
-    const btnDiv = document.getElementById('action-buttons');
-    btnDiv.style.display = 'none';
-    
+const PDF_RENDER_WIDTH = 1100;
+
+async function downloadPDF() {
+    const btnDiv  = document.getElementById('action-buttons');
     const element = document.getElementById('screen-report');
-    const opt = {
-      margin:       [0.1, 0.1, 0.1, 0.1],
-      filename:     'SRWC_BMI_Report_Card.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 1.8, useCORS: true, logging: false },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
+    const meta    = document.querySelector('meta[name="viewport"]');
+    const oldMeta = meta.getAttribute('content');
+    const oldShadow = element.style.boxShadow;
 
-    html2pdf().set(opt).from(element).save().then(() => {
+    btnDiv.style.display = 'none';
+    element.style.boxShadow = 'none';
+
+    // Force desktop layout so md: classes apply and the card stays wide
+    meta.setAttribute('content', 'width=' + PDF_RENDER_WIDTH);
+    window.scrollTo(0, 0);
+    await new Promise(r => setTimeout(r, 600)); // let it reflow
+
+    try {
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: PDF_RENDER_WIDTH
+        });
+
+        const jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+        const pdf = new jsPDFCtor({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const margin = 6;
+
+        // Scale so the ENTIRE card fits on one page
+        const ratio = Math.min((pageW - margin * 2) / canvas.width,
+                               (pageH - margin * 2) / canvas.height);
+        const w = canvas.width * ratio;
+        const h = canvas.height * ratio;
+
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG',
+                     (pageW - w) / 2, (pageH - h) / 2, w, h);
+        pdf.save('SRWC_BMI_Report_Card.pdf');
+    } catch (e) {
+        alert('PDF error: ' + e.message);
+    } finally {
+        meta.setAttribute('content', oldMeta);
+        element.style.boxShadow = oldShadow;
         btnDiv.style.display = 'flex';
-    });
+    }
 }
-
 
 // --- FORM SUBMISSION LOGIC ---
 document.getElementById('assessmentForm').addEventListener('submit', function(event) {
