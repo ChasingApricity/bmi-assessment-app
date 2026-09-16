@@ -187,17 +187,12 @@ function downloadPDF() {
     
     const element = document.getElementById('screen-report');
     const opt = {
-      margin:       0.2,
-      filename:     'BMI_Report_Card.pdf',
+      margin:       0.1,
+      filename:     'SRWC_BMI_Report_Card.pdf',
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
-
-    html2pdf().set(opt).from(element).save().then(() => {
-        btnDiv.style.display = 'flex';
-    });
-}
 
 // --- FORM SUBMISSION LOGIC ---
 document.getElementById('assessmentForm').addEventListener('submit', function(event) {
