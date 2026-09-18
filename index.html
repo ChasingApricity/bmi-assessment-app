@@ -90,15 +90,32 @@
                 </div>
             </div>
 
-            <!-- AUDIT FIELDS -->
+           <!-- AUDIT FIELDS -->
             <div class="grid grid-cols-2 gap-4 pt-2">
-                <div class="space-y-2">
-                    <label for="assessor" class="block text-sm font-semibold text-slate-700">Assessed By (Name)</label>
-                    <input type="text" id="assessor" name="assessor" required placeholder="Your Name" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-emerald-500 text-sm">
+                <div class="space-y-1">
+                    <label for="assessor" class="block text-sm font-semibold text-slate-700">
+                        Assessed By <span class="text-red-500">*</span>
+                        <span class="block text-[11px] text-slate-500 font-normal mt-0.5">Student Dietetic Professional</span>
+                    </label>
+                    <select id="assessor" name="assessor" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm cursor-pointer">
+                        <option value="" disabled selected>Select Assessor...</option>
+                        <option value="Munazza Anjum Farooqui">Munazza Anjum Farooqui</option>
+                        <option value="Tahera Nadim Jatu">Tahera Nadim Jatu</option>
+                        <option value="Ashna Tasnim">Ashna Tasnim</option>
+                        <option value="Umme Kulsum Jatu">Umme Kulsum Jatu</option>
+                        <option value="Huda Quazi">Huda Quazi</option>
+                    </select>
                 </div>
-                <div class="space-y-2">
-                    <label for="supervisor" class="block text-sm font-semibold text-slate-700">Supervised By (Faculty)</label>
-                    <input type="text" id="supervisor" name="supervisor" required placeholder="Faculty Name" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-emerald-500 text-sm">
+                <div class="space-y-1">
+                    <label for="supervisor" class="block text-sm font-semibold text-slate-700">
+                        Supervised By <span class="text-red-500">*</span>
+                        <span class="block text-[11px] text-slate-500 font-normal mt-0.5">Faculty Co-ordinator</span>
+                    </label>
+                    <select id="supervisor" name="supervisor" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm cursor-pointer">
+                        <option value="" disabled selected>Select Supervisor...</option>
+                        <option value="Ms. Nikita Dawande">Prof. Nikita Dawande</option>
+                        <option value="Ms. Sharfiya Qureshi">Prof. Sharfiya Qureshi</option>
+                    </select>
                 </div>
             </div>
 
