@@ -279,9 +279,16 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         // UPDATED: Split age into separate Year and Month variables
         let ageY = Math.floor(ageMonths / 12);
         let ageM = ageMonths % 12;
+// --- 1. GENERATE THE UNIQUE STUDENT URL ---
+        const baseUrl = window.location.origin + window.location.pathname;
+        const urlParams = new URLSearchParams({
+            n: name, g: gender, ay: ageY, am: ageM, h: heightCm, w: weightKg, 
+            b: bmi.toFixed(1), z: zScore.toFixed(2), p: percentile, i: interpretation,
+            as: assessorName, su: supervisorName
+        });
+        const fullReportUrl = `${baseUrl}?${urlParams.toString()}`;
 
-        // --- SILENTLY SEND DATA TO GOOGLE SHEETS ---
-        // REPLACE THE TEXT BELOW WITH YOUR ACTUAL APPS SCRIPT URL ONCE YOU HAVE IT
+        // --- 2. SILENTLY SEND DATA TO GOOGLE SHEETS ---
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxOnd147lwXC_LjqBmllDacV4G-Uro1h9xDDjOgLjLwYrkRIAuh78ll240n8vD5_xyStg/exec';
         
         if (scriptURL !== '') {
@@ -298,25 +305,19 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
             formData.append('email', email);
             formData.append('assessor', assessorName);
             formData.append('supervisor', supervisorName);
+            formData.append('reportUrl', fullReportUrl); // Pass the exact URL to Apps Script
 
             fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
                 .then(response => console.log('Successfully saved to Google Sheets!'))
                 .catch(error => console.error('Error saving to sheet:', error.message));
         }
-        // -------------------------------------------
 
+        // --- 3. DISPLAY LOCAL UI & QR CODE ---
         populateReportCard(name, gender, ageY, ageM, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation, assessorName, supervisorName);
 
-        const baseUrl = window.location.origin + window.location.pathname;
-        const urlParams = new URLSearchParams({
-            n: name, g: gender, ay: ageY, am: ageM, h: heightCm, w: weightKg, 
-            b: bmi.toFixed(1), z: zScore.toFixed(2), p: percentile, i: interpretation,
-            as: assessorName, su: supervisorName
-        });
-        
         document.getElementById('qrcode').innerHTML = "";
         new QRCode(document.getElementById("qrcode"), {
-            text: `${baseUrl}?${urlParams.toString()}`,
+            text: fullReportUrl, // Use the same generated URL
             width: 130, height: 130, colorDark : "#047857", colorLight : "#ffffff",
             correctLevel: QRCode.CorrectLevel.L
         });
