@@ -287,6 +287,7 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         if (scriptURL !== 'PASTE_YOUR_URL_HERE') {
             const formData = new FormData();
             formData.append('name', name);
+            formData.append('mobile', mobile);
             formData.append('gender', gender);
             formData.append('height', heightCm);
             formData.append('weight', weightKg);
@@ -295,7 +296,6 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
             formData.append('percentile', getOrdinalSuffix(percentile));
             formData.append('interpretation', interpretation);
             formData.append('email', email);
-            formData.append('mobile', mobile);
             formData.append('assessor', assessorName);
             formData.append('supervisor', supervisorName);
 
@@ -317,7 +317,8 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         document.getElementById('qrcode').innerHTML = "";
         new QRCode(document.getElementById("qrcode"), {
             text: `${baseUrl}?${urlParams.toString()}`,
-            width: 130, height: 130, colorDark : "#047857", colorLight : "#ffffff"
+            width: 130, height: 130, colorDark : "#047857", colorLight : "#ffffff",
+            correctLevel: QRCode.CorrectLevel.L
         });
 
         document.getElementById('screen-form').classList.add('hidden');
