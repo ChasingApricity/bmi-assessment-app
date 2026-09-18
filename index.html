@@ -334,9 +334,11 @@
         flatpickr("#dob-wrapper", {
             wrap: true,
             allowInput: true,
-            dateFormat: "Y-m-d",
+            altInput: true,         // Creates the visible box for the user
+            altFormat: "d-m-Y",     // Formats the user's visible box as DD-MM-YYYY
+            dateFormat: "Y-m-d",    // Formats the hidden box for script.js as YYYY-MM-DD
             maxDate: "today",
-            clickOpens: false
+            clickOpens: false       // Keeps the typing and icon separate
         });
     </script>
     <script src="script.js"></script>
