@@ -282,7 +282,7 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
 
         // --- SILENTLY SEND DATA TO GOOGLE SHEETS ---
         // REPLACE THE TEXT BELOW WITH YOUR ACTUAL APPS SCRIPT URL ONCE YOU HAVE IT
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxXc9f8R218N3_5D1c-icDSbN1EHNDt9Gr9aDFRceMT9XmIGpO5zHP74J-01lkOc4jqrg/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxOnd147lwXC_LjqBmllDacV4G-Uro1h9xDDjOgLjLwYrkRIAuh78ll240n8vD5_xyStg/exec';
         
         if (scriptURL !== '') {
             const formData = new FormData();
