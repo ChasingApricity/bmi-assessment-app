@@ -240,7 +240,8 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
     event.preventDefault();
 
     try {
-        const name = document.getElementById('studentName').value;
+        const rawName = document.getElementById('studentName').value;
+        const name = rawName.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         const gender = document.querySelector('input[name="gender"]:checked').value;
         const dobInput = document.getElementById('dob').value;
         const heightCm = parseFloat(document.getElementById('height').value);
