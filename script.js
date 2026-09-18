@@ -165,10 +165,11 @@ function getOrdinalSuffix(val) {
     return i + "th";
 }
 
-function populateReportCard(name, gender, displayAge, height, weight, bmi, zscore, percentile, interp, assessor, supervisor) {
+function populateReportCard(name, gender, ageY, ageM, height, weight, bmi, zscore, percentile, interp, assessor, supervisor) {
     document.getElementById('rep-name').innerText = name || "";
     document.getElementById('rep-gender').innerText = gender || "";
-    document.getElementById('rep-age').innerText = displayAge || "";
+    document.getElementById('rep-age-y').innerText = ageY !== null ? ageY : "";
+    document.getElementById('rep-age-m').innerText = ageM !== null ? ageM : "";
     document.getElementById('rep-height').innerText = height || "";
     document.getElementById('rep-weight').innerText = weight || "";
     document.getElementById('rep-bmi').innerText = bmi || "";
@@ -179,7 +180,6 @@ function populateReportCard(name, gender, displayAge, height, weight, bmi, zscor
     document.getElementById('rep-assessor').innerText = assessor ? assessor : "Not provided";
     document.getElementById('rep-supervisor').innerText = supervisor ? supervisor : "Not provided";
 }
-
 // --- PDF DOWNLOAD FUNCTION ---
 const PDF_RENDER_WIDTH = 1100;
 
@@ -246,20 +246,21 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         const heightCm = parseFloat(document.getElementById('height').value);
         const weightKg = parseFloat(document.getElementById('weight').value);
         
+        const email = document.getElementById('email').value;
+        const mobile = document.getElementById('mobile').value;
         const assessorName = document.getElementById('assessor').value;
         const supervisorName = document.getElementById('supervisor').value;
 
         const heightM = heightCm / 100;
         const bmi = weightKg / (heightM * heightM);
 
-        // Appending T00:00:00 prevents midnight UTC timezone shifts
-        const dob = new Date(dobInput + 'T00:00:00');
+        const dob = new Date(dobInput);
         const today = new Date();
         let ageMonths = (today.getFullYear() - dob.getFullYear()) * 12 + (today.getMonth() - dob.getMonth());
         if (today.getDate() < dob.getDate()) ageMonths--; 
 
         if (ageMonths < 160 || ageMonths > 228) {
-            alert("This portal is configured for ages 160 to 228 months (approx. 13 to 19 yrs). Student is " + ageMonths + " months old.");
+            alert("This portal is configured for ages 160 to 228 months. Student is " + ageMonths + " months old.");
             return; 
         }
 
@@ -273,42 +274,49 @@ document.getElementById('assessmentForm').addEventListener('submit', function(ev
         else if (zScore <= 1) interpretation = "Normal (Healthy Weight)";
         else if (zScore <= 2) interpretation = "Overweight";
         else interpretation = "Obesity";
-// Clean Age Output (e.g. "15 Yrs, 6 Mos")
-        let years = Math.floor(ageMonths / 12);
-        let months = ageMonths % 12;
-        let displayAge = `${years} Yrs, ${months} Mos`;
 
-        populateReportCard(name, gender, displayAge, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation, assessorName, supervisorName);
+        // UPDATED: Split age into separate Year and Month variables
+        let ageY = Math.floor(ageMonths / 12);
+        let ageM = ageMonths % 12;
+
+        // --- SILENTLY SEND DATA TO GOOGLE SHEETS ---
+        // REPLACE THE TEXT BELOW WITH YOUR ACTUAL APPS SCRIPT URL ONCE YOU HAVE IT
+        const scriptURL = 'PASTE_YOUR_URL_HERE';
+        
+        if (scriptURL !== 'PASTE_YOUR_URL_HERE') {
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('gender', gender);
+            formData.append('height', heightCm);
+            formData.append('weight', weightKg);
+            formData.append('bmi', bmi.toFixed(1));
+            formData.append('zscore', zScore.toFixed(2));
+            formData.append('percentile', getOrdinalSuffix(percentile));
+            formData.append('interpretation', interpretation);
+            formData.append('email', email);
+            formData.append('mobile', mobile);
+            formData.append('assessor', assessorName);
+            formData.append('supervisor', supervisorName);
+
+            fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
+                .then(response => console.log('Successfully saved to Google Sheets!'))
+                .catch(error => console.error('Error saving to sheet:', error.message));
+        }
+        // -------------------------------------------
+
+        populateReportCard(name, gender, ageY, ageM, heightCm, weightKg, bmi.toFixed(1), zScore.toFixed(2), percentile, interpretation, assessorName, supervisorName);
 
         const baseUrl = window.location.origin + window.location.pathname;
         const urlParams = new URLSearchParams({
-            n: name, g: gender, a: displayAge, h: heightCm, w: weightKg, 
+            n: name, g: gender, ay: ageY, am: ageM, h: heightCm, w: weightKg, 
             b: bmi.toFixed(1), z: zScore.toFixed(2), p: percentile, i: interpretation,
             as: assessorName, su: supervisorName
         });
         
-        const reportUrl = `${baseUrl}?${urlParams.toString()}`;
-
-        // Reset QR box container visibility
-        const qrBox = document.getElementById('qr-box');
-        if (qrBox) qrBox.style.display = '';
-
-        if (typeof QRCode === 'undefined') {
-            alert("QRCode generator library did not load properly.");
-            return;
-        }
-
-        // --- UPDATED QR CODE GENERATION ---
-        const qrElement = document.getElementById("qrcode");
-        qrElement.innerHTML = "";
-
-        new QRCode(qrElement, {
-            text: reportUrl,
-            width: 140,
-            height: 140,
-            colorDark: "#000000",   // Pure black
-            colorLight: "#ffffff",  // Pure white background
-            correctLevel: QRCode.CorrectLevel.H // Highest error correction
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+            text: `${baseUrl}?${urlParams.toString()}`,
+            width: 130, height: 130, colorDark : "#047857", colorLight : "#ffffff"
         });
 
         document.getElementById('screen-form').classList.add('hidden');
@@ -324,14 +332,13 @@ window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     if(params.has('n')) {
         populateReportCard(
-            params.get('n'), params.get('g'), params.get('a'), 
+            params.get('n'), params.get('g'), params.get('ay'), params.get('am'), 
             params.get('h'), params.get('w'), params.get('b'), 
             params.get('z'), params.get('p'), params.get('i'),
             params.get('as'), params.get('su')
         );
         
-        const qrBox = document.getElementById('qr-box');
-        if (qrBox) qrBox.style.display = 'none';
+        document.getElementById('qr-box').style.display = 'none';
         
         const btnNext = document.getElementById('btn-next');
         const btnDownload = document.getElementById('btn-download');
