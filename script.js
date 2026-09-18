@@ -190,17 +190,28 @@ async function downloadPDF() {
     }
     const btnDiv  = document.getElementById('action-buttons');
     const element = document.getElementById('screen-report');
+    const footer = document.getElementById('pdf-footer'); 
     const meta    = document.querySelector('meta[name="viewport"]');
+    
     const oldMeta = meta ? meta.getAttribute('content') : '';
     const oldShadow = element.style.boxShadow;
+    const oldWidth = element.style.width;
 
     if (btnDiv) btnDiv.style.display = 'none';
     element.style.boxShadow = 'none';
 
-    // Force desktop layout so md: classes apply and the card stays wide
+    // FIX: Force hard desktop width to ensure Tailwind flex-row (side-by-side) applies to signatures
+    element.style.width = PDF_RENDER_WIDTH + 'px';
     if (meta) meta.setAttribute('content', 'width=' + PDF_RENDER_WIDTH);
+    
+    // FIX: Explicitly remove mobile column stacking class from footer during render
+    if (footer) {
+        footer.classList.remove('flex-col');
+        footer.classList.add('flex-row');
+    }
+
     window.scrollTo(0, 0);
-    await new Promise(r => setTimeout(r, 600)); // let layout reflow
+    await new Promise(r => setTimeout(r, 600)); // allow layout reflow
 
     try {
         const canvas = await html2canvas(element, {
@@ -219,22 +230,40 @@ async function downloadPDF() {
         const pageH = pdf.internal.pageSize.getHeight();
         const margin = 6;
 
-        // Scale so the ENTIRE card fits on one page
         const ratio = Math.min((pageW - margin * 2) / canvas.width, (pageH - margin * 2) / canvas.height);
         const w = canvas.width * ratio;
         const h = canvas.height * ratio;
 
         pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', (pageW - w) / 2, (pageH - h) / 2, w, h);
-        pdf.save('SRWC_BMI_Report_Card.pdf');
+        
+        // MOBILE DOWNLOAD FIX: Detect OS and route file delivery
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // Open securely in a new browser tab for iOS/Android saving
+            const pdfBlob = pdf.output('blob');
+            const blobUrl = URL.createObjectURL(pdfBlob);
+            window.location.href = blobUrl; 
+        } else {
+            // Standard direct download for Windows/Mac
+            pdf.save('SRWC_BMI_Report_Card.pdf');
+        }
+        
     } catch (e) {
         alert('PDF error: ' + e.message);
     } finally {
+        // Restore mobile styling back to original state
         if (meta && oldMeta) meta.setAttribute('content', oldMeta);
         element.style.boxShadow = oldShadow;
+        element.style.width = oldWidth;
+        
+        if (footer) {
+            footer.classList.add('flex-col');
+            footer.classList.remove('flex-row');
+        }
         if (btnDiv) btnDiv.style.display = 'flex';
     }
 }
-
 // --- FORM SUBMISSION LOGIC ---
 document.getElementById('assessmentForm').addEventListener('submit', function(event) {
     event.preventDefault();
