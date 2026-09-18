@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <form id="assessmentForm" class="px-8 pt-8 pb-8 space-y-8">
+        <form id="assessmentForm" class="px-8 pt-8 pb-4 space-y-8">
             <div class="space-y-2">
                 <label for="studentName" class="block text-sm font-semibold text-slate-700">Student Name</label>
                 <input type="text" id="studentName" name="studentName" required placeholder="Enter full name" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
@@ -90,7 +90,7 @@
                 </div>
             </div>
 
-           <!-- AUDIT FIELDS -->
+            <!-- AUDIT FIELDS -->
             <div class="grid grid-cols-2 gap-4 pt-2">
                 <div class="space-y-1">
                     <label for="assessor" class="block text-sm font-semibold text-slate-700">
@@ -113,25 +113,31 @@
                     </label>
                     <select id="supervisor" name="supervisor" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm cursor-pointer">
                         <option value="" disabled selected>Select Supervisor...</option>
-                        <option value="Ms. Nikita Dawande">Prof. Nikita Dawande</option>
-                        <option value="Ms. Sharfiya Qureshi">Prof. Sharfiya Qureshi</option>
+                        <option value="Prof. Nikita Dawande">Prof. Nikita Dawande</option>
+                        <option value="Prof. Sharfiya Qureshi">Prof. Sharfiya Qureshi</option>
                     </select>
                 </div>
             </div>
 
-            <div class="pt-2">
+            <div class="pt-4 pb-2">
                 <button type="submit" class="w-full bg-slate-900 text-white font-bold text-lg py-4 px-6 rounded-xl hover:bg-emerald-600 transition-all duration-300">
                     Calculate Result
                 </button>
             </div>
         </form>
 
-        <!-- DEVELOPER CREDIT -->
-        <div class="mt-6 pt-3 border-t border-slate-100 text-center text-[11px] text-slate-400" style="text-align: center;">
-            <span style="display: inline-block; word-spacing: 0px !important;">
-                Designed & Developed by <strong class="font-semibold text-slate-600">Munazza Anjum Farooqui</strong> 
-                <a href="mailto:munazza.0f@gmail.com" class="text-emerald-600 hover:text-emerald-700 transition-colors ml-1 font-medium">(munazza.0f@gmail.com)</a>
-            </span>
+        <!-- PROMINENT DEVELOPER CREDIT (FORM SCREEN) -->
+        <div class="pb-8 px-8 flex justify-center">
+            <div class="bg-slate-50/50 px-6 py-4 rounded-2xl border border-slate-200 text-center w-full shadow-sm">
+                <span class="text-xs text-slate-500 font-medium tracking-wide block uppercase mb-1">
+                    Designed & Developed By
+                </span>
+                <span class="block">
+                    <strong class="font-bold text-slate-800 text-sm">Munazza Anjum Farooqui</strong> 
+                    <span class="inline-block mx-1 text-slate-300">|</span>
+                    <a href="mailto:munazza.0f@gmail.com" class="text-emerald-600 hover:text-emerald-800 transition-colors font-semibold text-sm">munazza.0f@gmail.com</a>
+                </span>
+            </div>
         </div>
     </div> <!-- THIS CLOSES THE FORM SCREEN -->
 
@@ -141,11 +147,23 @@
     <div id="screen-report" class="hidden w-full max-w-4xl bg-white shadow-2xl border border-slate-200 rounded-lg overflow-hidden transition-all duration-500 p-6 md:p-10 relative">
         
         <!-- Header with Logos -->
-        <div class="text-center mb-8">
+        <div class="text-center mb-6">
             <div class="flex justify-between items-center mb-4 border-b pb-4">
                 <img src="logo-ghrstu.png" alt="GHRSTU" class="h-14 object-contain" onerror="this.style.display='none'">
                 <img src="logo-srwc.png" alt="SRWC" class="h-20 object-contain" onerror="this.style.display='none'">
             </div>
+        </div>
+
+        <!-- BUTTONS (MOVED EXCLUSIVELY TO TOP) -->
+        <div id="action-buttons" class="mb-6 flex justify-center space-x-4">
+            <button id="btn-download" onclick="downloadPDF()" class="hidden bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-emerald-700 transition shadow-md items-center">
+                <svg class="w-5 h-5 mr-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Download PDF
+            </button>
+            
+            <button id="btn-next" onclick="window.location.reload()" class="bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-lg hover:bg-slate-300 transition">
+                Next Student
+            </button>
         </div>
 
         <div class="grid md:grid-cols-3 gap-8 items-center">
@@ -164,7 +182,7 @@
                         <div class="col-span-7 border-b-2 border-dotted border-slate-300 text-center font-bold text-slate-900 capitalize pb-0.5" id="rep-gender"></div>
                     </div>
                     
-                    <!-- UPDATED AGE ROW WITH DASHES -->
+                    <!-- AGE ROW WITH DASHES -->
                     <div class="grid grid-cols-12 gap-2 items-center">
                         <span class="col-span-5 font-semibold text-slate-600">Age:</span>
                         <div class="col-span-7 flex justify-center items-center gap-1.5 pb-0.5">
@@ -283,23 +301,18 @@
             </div>
         </div>
 
-        <!-- DEVELOPER CREDIT -->
-        <div class="mt-6 pt-3 border-t border-slate-100 text-center text-[11px] text-slate-400" style="text-align: center;">
-            <span style="display: inline-block; word-spacing: 0px !important;">
-                Designed & Developed by <strong class="font-semibold text-slate-600">Munazza Anjum Farooqui</strong> 
-                <a href="mailto:munazza.0f@gmail.com" class="text-emerald-600 hover:text-emerald-700 transition-colors ml-1 font-medium">(munazza.0f@gmail.com)</a>
-            </span>
-        </div>
-        <!-- BUTTONS -->
-        <div id="action-buttons" class="mt-8 flex justify-center space-x-4">
-            <button id="btn-download" onclick="downloadPDF()" class="hidden bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-emerald-700 transition shadow-md items-center">
-                <svg class="w-5 h-5 mr-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Download PDF
-            </button>
-            
-            <button id="btn-next" onclick="window.location.reload()" class="bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-lg hover:bg-slate-300 transition">
-                Next Student
-            </button>
+        <!-- PROMINENT DEVELOPER CREDIT (REPORT SCREEN) -->
+        <div class="mt-8 border-t border-slate-100 pt-6 flex justify-center">
+            <div class="bg-slate-50/50 px-6 py-4 rounded-2xl border border-slate-200 text-center w-full max-w-md shadow-sm">
+                <span class="text-xs text-slate-500 font-medium tracking-wide block uppercase mb-1">
+                    Designed & Developed By
+                </span>
+                <span class="block">
+                    <strong class="font-bold text-slate-800 text-sm">Munazza Anjum Farooqui</strong> 
+                    <span class="inline-block mx-1 text-slate-300">|</span>
+                    <a href="mailto:munazza.0f@gmail.com" class="text-emerald-600 hover:text-emerald-800 transition-colors font-semibold text-sm">munazza.0f@gmail.com</a>
+                </span>
+            </div>
         </div>
 
     </div> 
