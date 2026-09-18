@@ -65,10 +65,17 @@
                 </div>
             </div>
 
+            <!-- HYBRID DATE INPUT WITH ICON -->
             <div class="space-y-2">
                 <label for="dob" class="block text-sm font-semibold text-slate-700">Date of Birth</label>
-                <!-- Changed to type="text" for Flatpickr compatibility -->
-                <input type="text" id="dob" name="dob" required placeholder="YYYY-MM-DD" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <div id="dob-wrapper" class="relative flex items-center">
+                    <input type="text" id="dob" name="dob" required placeholder="YYYY-MM-DD" data-input class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-3.5 pr-12 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <button type="button" title="Open Calendar" data-toggle class="absolute right-3 text-emerald-500 hover:text-emerald-700 cursor-pointer p-2 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
@@ -324,10 +331,12 @@
 
     <!-- Initialize Flatpickr Datepicker -->
     <script>
-        flatpickr("#dob", {
+        flatpickr("#dob-wrapper", {
+            wrap: true,
             allowInput: true,
             dateFormat: "Y-m-d",
-            maxDate: "today"
+            maxDate: "today",
+            clickOpens: false
         });
     </script>
     <script src="script.js"></script>
