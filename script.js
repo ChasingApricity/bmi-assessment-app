@@ -192,7 +192,14 @@ async function downloadPDF() {
     const element = document.getElementById('screen-report');
     const footer = document.getElementById('pdf-footer'); 
     const meta    = document.querySelector('meta[name="viewport"]');
+    const btnDownload = document.getElementById('btn-download');
     
+    // UX SPEED FIX: Show a loading state so the app doesn't feel frozen
+    const originalText = btnDownload.innerHTML;
+    btnDownload.innerHTML = "⏳ Generating PDF...";
+    btnDownload.style.opacity = "0.7";
+    await new Promise(r => setTimeout(r, 50)); // Give UI a split second to update text
+
     const oldMeta = meta ? meta.getAttribute('content') : '';
     const oldShadow = element.style.boxShadow;
     const oldWidth = element.style.width;
@@ -200,22 +207,24 @@ async function downloadPDF() {
     if (btnDiv) btnDiv.style.display = 'none';
     element.style.boxShadow = 'none';
 
-    // FIX: Force hard desktop width to ensure Tailwind flex-row (side-by-side) applies to signatures
+    // Force hard desktop width to ensure Tailwind flex-row (side-by-side) applies to signatures
     element.style.width = PDF_RENDER_WIDTH + 'px';
     if (meta) meta.setAttribute('content', 'width=' + PDF_RENDER_WIDTH);
     
-    // FIX: Explicitly remove mobile column stacking class from footer during render
+    // Explicitly remove mobile column stacking class from footer during render
     if (footer) {
         footer.classList.remove('flex-col');
         footer.classList.add('flex-row');
     }
 
     window.scrollTo(0, 0);
-    await new Promise(r => setTimeout(r, 600)); // allow layout reflow
+    
+    // SPEED FIX: Cut the artificial layout waiting time down from 600ms to 150ms
+    await new Promise(r => setTimeout(r, 150)); 
 
     try {
         const canvas = await html2canvas(element, {
-            scale: 2,
+            scale: 1.5, // SPEED FIX: Dropped from 2x to 1.5x to cut rendering math in half
             useCORS: true,
             backgroundColor: '#ffffff',
             scrollX: 0,
@@ -262,6 +271,10 @@ async function downloadPDF() {
             footer.classList.remove('flex-row');
         }
         if (btnDiv) btnDiv.style.display = 'flex';
+        
+        // Restore the original button design
+        btnDownload.innerHTML = originalText;
+        btnDownload.style.opacity = "1";
     }
 }
 // --- FORM SUBMISSION LOGIC ---
