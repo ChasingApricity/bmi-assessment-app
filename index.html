@@ -330,15 +330,32 @@
 
     <!-- Initialize Flatpickr Datepicker -->
     <script>
-        flatpickr("#dob-wrapper", {
+        const fp = flatpickr("#dob-wrapper", {
             wrap: true,
             allowInput: true,
-            altInput: true,         // Creates the visible box for the user
-            altFormat: "d-m-Y",     // Formats the user's visible box as DD-MM-YYYY
-            dateFormat: "Y-m-d",    // Formats the hidden box for script.js as YYYY-MM-DD
+            altInput: true,
+            altFormat: "d-m-Y",
+            dateFormat: "Y-m-d",
             maxDate: "today",
-            clickOpens: false       // Keeps the typing and icon separate
+            clickOpens: false
         });
+
+        // Auto-format the visible input to automatically add dashes (DD-MM-YYYY)
+        if (fp.altInput) {
+            fp.altInput.addEventListener('input', function(e) {
+                let val = e.target.value.replace(/\D/g, ''); // Remove any non-number characters
+                if (val.length > 8) val = val.substring(0, 8); // Cap at 8 digits
+                
+                // Automatically insert dashes based on how many numbers have been typed
+                if (val.length > 4) {
+                    e.target.value = val.substring(0, 2) + '-' + val.substring(2, 4) + '-' + val.substring(4);
+                } else if (val.length > 2) {
+                    e.target.value = val.substring(0, 2) + '-' + val.substring(2);
+                } else {
+                    e.target.value = val;
+                }
+            });
+        }
     </script>
     <script src="script.js"></script>
 </body>
